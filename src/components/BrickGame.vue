@@ -94,10 +94,6 @@ let ballId = 0
 let launchTimer: ReturnType<typeof setInterval> | null = null
 
 // ==================== 辅助函数 ====================
-function randomBetween(min: number, max: number) {
-  return Math.random() * (max - min) + min
-}
-
 function randomInt(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min
 }
@@ -231,8 +227,7 @@ function checkBrickCollision(ball: Ball, brick: Brick): { hit: boolean; newVx: n
       }
     }
   } else {
-    // 三角形碰撞
-    const dir = brick.triangleDir!
+    // 三角形碰撞（简化：用圆形近似）
     const cx = brick.x + size / 2
     const cy = brick.y + size / 2
 
