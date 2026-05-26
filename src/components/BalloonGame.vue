@@ -136,7 +136,7 @@ function spawnParticles(x: number, y: number, color: string) {
   }
 }
 
-function popBalloon(balloon: Balloon, event: MouseEvent) {
+function popBalloon(balloon: Balloon) {
   if (balloon.popping) return
   balloon.popping = true
   score.value += 10
@@ -258,7 +258,7 @@ onUnmounted(() => {
           height: b.size * 1.25 + 'px',
           backgroundColor: b.color,
         }"
-        @click="popBalloon(b, $event)"
+        @click="popBalloon(b)"
       >
         <div class="balloon-knot" :style="{ borderTopColor: b.color }"></div>
       </div>
