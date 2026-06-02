@@ -4,12 +4,15 @@ import HelloWorld from './components/HelloWorld.vue'
 import GameCard from './components/GameCard.vue'
 import BalloonGame from './components/BalloonGame.vue'
 import BrickGame from './components/BrickGame.vue'
+import DevSidebar from './components/DevSidebar.vue'
 
 type View = 'home' | 'balloon-game' | 'brick-game'
 const currentView = ref<View>('home')
 </script>
 
 <template>
+  <DevSidebar />
+
   <div v-if="currentView === 'home'">
     <HelloWorld />
     <section class="games-section">
