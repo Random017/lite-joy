@@ -52,6 +52,8 @@ export const OUTPUT_MODES = [
 
 export const LAYOUT_MOBILE_QUERY = '(max-width: 760px)';
 
+export const QUICK_PRESET_IDS = ['one-inch', 'two-inch', 'social-security', 'passport'];
+
 export const PANEL_TABS = [
   { id: 'crop', label: '裁剪', icon: 'crop', title: '裁剪与比例', eyebrow: 'CROP' },
   { id: 'rotate', label: '旋转', icon: 'rotate', title: '旋转与翻转', eyebrow: 'ROTATE' },

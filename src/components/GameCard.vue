@@ -67,4 +67,39 @@ p {
 .play-btn:hover {
   background: rgba(255, 255, 255, 0.35);
 }
+
+@media (max-width: 640px) {
+  .game-card {
+    width: 100%;
+    max-width: none;
+    padding: 24px 20px;
+    border-radius: 14px;
+  }
+
+  .game-card:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .card-emoji {
+    margin-bottom: 10px;
+    font-size: 52px;
+  }
+
+  h3 {
+    font-size: 24px;
+  }
+
+  p {
+    margin-bottom: 18px;
+    font-size: 16px;
+    line-height: 1.55;
+  }
+
+  .play-btn {
+    width: 100%;
+    min-height: 48px;
+    font-size: 16px;
+  }
+}
 </style>

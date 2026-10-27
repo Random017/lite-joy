@@ -25,6 +25,8 @@
   align-items: center;
   gap: 11px;
   min-width: 0;
+  color: inherit;
+  text-decoration: none;
 }
 
 .brand-mark {
@@ -220,6 +222,14 @@
   background: var(--bg-panel);
 }
 
+.sheet-handle {
+  display: none;
+}
+
+.panel-quick {
+  display: none;
+}
+
 .panel-head {
   display: flex;
   flex: 0 0 auto;
@@ -318,8 +328,8 @@
 
 @media (max-width: 760px) {
   :root {
-    --header-h: 56px;
-    --tabbar-h: 58px;
+    --header-h: 60px;
+    --tabbar-h: 66px;
   }
 
   .app {
@@ -327,8 +337,12 @@
   }
 
   .app-header {
-    gap: 10px;
+    gap: 8px;
     padding: 0 12px;
+  }
+
+  .brand {
+    gap: 8px;
   }
 
   .brand-mark {
@@ -353,12 +367,14 @@
   }
 
   .header-actions .button-label {
-    display: none;
+    display: inline;
   }
 
   .header-actions .button {
-    min-width: 40px;
+    min-width: 44px;
+    min-height: 44px;
     padding: 0 10px;
+    font-size: 14px;
   }
 
   .app-main {
@@ -371,23 +387,105 @@
   }
 
   .panel {
-    max-height: 42vh;
-    max-height: 42dvh;
+    height: 44vh;
+    height: 44dvh;
+    max-height: calc(100dvh - var(--header-h) - var(--tabbar-h) - 132px);
     border-top: 1px solid var(--line);
     border-left: 0;
     box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.08);
+    transition: height 200ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .app.is-sheet-dragging .panel {
+    transition: none;
+  }
+
+  .sheet-handle {
+    display: flex;
+    flex: 0 0 40px;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    background: var(--bg-panel);
+    touch-action: none;
+    user-select: none;
+  }
+
+  .sheet-handle span {
+    width: 42px;
+    height: 5px;
+    border-radius: 999px;
+    background: var(--line-strong);
+  }
+
+  .sheet-handle:focus-visible {
+    outline-offset: -3px;
   }
 
   .panel-head {
-    padding: 12px 14px 9px;
+    padding: 2px 14px 9px;
   }
 
   .panel-title {
-    font-size: 17px;
+    font-size: 20px;
   }
 
   .panel-body {
-    padding: 12px 14px calc(16px + var(--safe-b)) ;
+    padding: 12px 14px calc(14px + var(--safe-b));
+  }
+
+  .panel-quick {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 12px;
+    border-top: 1px solid var(--line);
+    background: var(--bg-panel);
+  }
+
+  .panel-quick[hidden] {
+    display: none !important;
+  }
+
+  .quick-meta {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1px;
+    padding: 4px 0;
+    border: 0;
+    background: none;
+    text-align: left;
+  }
+
+  .quick-meta strong {
+    overflow: hidden;
+    max-width: 100%;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .quick-meta span {
+    overflow: hidden;
+    max-width: 100%;
+    color: var(--muted);
+    font-size: 11.5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .panel-quick .button {
+    min-height: 48px;
+    flex: 0 0 auto;
+    padding: 0 18px;
+    border-radius: 12px;
+    font-size: 15px;
   }
 
   .statusbar {
@@ -409,29 +507,30 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 3px;
+    gap: 4px;
     min-width: 0;
     border: 0;
     background: transparent;
     color: var(--muted);
-    font-size: 10px;
+    font-size: 12px;
   }
 
   .mobile-tab svg {
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
   }
 
   .mobile-tab[aria-pressed="true"] {
     color: var(--accent-strong);
+    font-weight: 600;
   }
 
   .mobile-tab[aria-pressed="true"]::before {
     position: absolute;
     top: 0;
-    width: 24px;
-    height: 2px;
-    border-radius: 2px;
+    width: 28px;
+    height: 3px;
+    border-radius: 0 0 3px 3px;
     background: var(--accent);
     content: "";
   }

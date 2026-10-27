@@ -203,4 +203,41 @@ function selectTool(toolId: ToolType) {
   flex: 1;
   overflow: hidden;
 }
+
+@media (max-width: 640px) {
+  .sidebar-wrapper {
+    top: auto;
+    right: 0;
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    transform: none;
+    align-items: flex-end;
+  }
+
+  .toggle-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px 0 0 10px;
+    font-size: 20px;
+  }
+
+  .sidebar {
+    width: min(calc(100vw - 56px), 360px);
+    height: min(70dvh, 520px);
+    border-radius: 14px 0 0 14px;
+  }
+
+  .close-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
+  }
+
+  .tool-icon {
+    min-height: 52px;
+  }
+
+  .tool-icon .label {
+    font-size: 12px;
+  }
+}
 </style>
