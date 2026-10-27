@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import HelloWorld from './components/HelloWorld.vue'
 import GameCard from './components/GameCard.vue'
 import BalloonGame from './components/BalloonGame.vue'
 import BrickGame from './components/BrickGame.vue'
@@ -18,7 +17,7 @@ function openImageTool() {
   <DevSidebar />
 
   <div v-if="currentView === 'home'">
-    <HelloWorld />
+    <h1 class="visually-hidden">lite-joy 小游戏与实用工具</h1>
     <section class="home-section">
       <h2 class="section-title">小游戏</h2>
       <div class="card-grid">
@@ -67,6 +66,18 @@ function openImageTool() {
   margin: 0 auto;
 }
 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
 .home-section + .home-section {
   padding-top: 0;
 }
@@ -81,5 +92,25 @@ function openImageTool() {
   display: flex;
   gap: 24px;
   flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .home-section {
+    padding: 32px 16px;
+  }
+
+  .home-section + .home-section {
+    padding-top: 8px;
+  }
+
+  .section-title {
+    margin-bottom: 16px;
+    font-size: 24px;
+    text-align: left;
+  }
+
+  .card-grid {
+    gap: 16px;
+  }
 }
 </style>

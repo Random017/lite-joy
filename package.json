@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "node image-tool/e2e/smoke.mjs && node image-tool/e2e/features.mjs && node image-tool/e2e/compression-target.mjs"
+    "test:e2e": "node image-tool/e2e/smoke.mjs && node image-tool/e2e/features.mjs && node image-tool/e2e/compression-target.mjs && node image-tool/e2e/mobile-ux.mjs"
   },
   "dependencies": {
     "vue": "^3.5.34"

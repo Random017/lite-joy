@@ -1,4 +1,4 @@
-import { BACKGROUND_COLORS, FORMATS } from '../core/constants.js';
+import { BACKGROUND_COLORS, FORMATS, QUICK_PRESET_IDS } from '../core/constants.js';
 import { getPreset, PRESET_GROUPS, PRESETS } from '../core/presets.js';
 import { formatDimensions } from '../utils/format.js';
 import { el } from '../utils/dom.js';
@@ -87,9 +87,9 @@ export function createPanels(container, { store, actions }) {
     </section>
 
     <section class="panel-section" data-panel="preset" hidden>
-      <div class="notice notice--warn">
-        ${icon('info', 15)}
-        <span>规格为常见参考值。各考试、各省市要求可能不同，提交前请以官方公告为准。</span>
+      <div class="preset-quick">
+        <h3 class="section-heading">最常用 <small>点选即套用</small></h3>
+        <div class="preset-grid preset-grid--quick" id="preset-quick"></div>
       </div>
       <div class="preset-groups" id="preset-groups"></div>
       <div>
@@ -131,6 +131,10 @@ export function createPanels(container, { store, actions }) {
         <span>显示人像构图参考线</span>
         <input type="checkbox" id="guides-toggle" />
       </label>
+      <div class="notice notice--warn">
+        ${icon('info', 15)}
+        <span>规格为常见参考值。各考试、各省市要求可能不同，提交前请以官方公告为准。</span>
+      </div>
     </section>
 
     <section class="panel-section" data-panel="export" hidden>
@@ -231,6 +235,7 @@ export function createPanels(container, { store, actions }) {
     angleNumber: container.querySelector('#angle-number'),
     angleReadout: container.querySelector('#angle-readout'),
     presetGroups: container.querySelector('#preset-groups'),
+    presetQuick: container.querySelector('#preset-quick'),
     customWidth: container.querySelector('#custom-mm-width'),
     customHeight: container.querySelector('#custom-mm-height'),
     customDpi: container.querySelector('#custom-dpi'),
@@ -274,28 +279,37 @@ export function createPanels(container, { store, actions }) {
     refs.ratioRow.append(button);
   }
 
+  const createPresetCard = (preset, extraClass = '') => {
+    const card = el('button', {
+      type: 'button',
+      class: `preset-card${extraClass ? ` ${extraClass}` : ''}`,
+      dataset: { preset: preset.id },
+      ariaPressed: false,
+    });
+    card.append(
+      el('span', { class: 'preset-name', text: preset.name }),
+      el('span', { class: 'preset-size', text: `${preset.width}×${preset.height} px` }),
+      el('span', {
+        class: 'preset-mm',
+        text: `${preset.mmWidth}×${preset.mmHeight} mm · ${preset.dpi} dpi`,
+      }),
+    );
+    if (preset.tag) card.append(el('span', { class: 'preset-tag', text: preset.tag }));
+    card.addEventListener('click', () => actions.applyPreset(preset.id));
+    return card;
+  };
+
+  for (const id of QUICK_PRESET_IDS) {
+    const preset = getPreset(id);
+    if (preset) refs.presetQuick.append(createPresetCard(preset, 'preset-card--quick'));
+  }
+
   for (const group of PRESET_GROUPS) {
     const groupNode = el('div', { class: 'preset-group' });
     groupNode.append(el('h3', { class: 'preset-group-title', text: group.label }));
     const grid = el('div', { class: 'preset-grid' });
     for (const preset of PRESETS.filter((item) => item.group === group.id)) {
-      const card = el('button', {
-        type: 'button',
-        class: 'preset-card',
-        dataset: { preset: preset.id },
-        ariaPressed: false,
-      });
-      card.append(
-        el('span', { class: 'preset-name', text: preset.name }),
-        el('span', { class: 'preset-size', text: `${preset.width}×${preset.height} px` }),
-        el('span', {
-          class: 'preset-mm',
-          text: `${preset.mmWidth}×${preset.mmHeight} mm · ${preset.dpi} dpi`,
-        }),
-      );
-      if (preset.tag) card.append(el('span', { class: 'preset-tag', text: preset.tag }));
-      card.addEventListener('click', () => actions.applyPreset(preset.id));
-      grid.append(card);
+      grid.append(createPresetCard(preset));
     }
     groupNode.append(grid);
     refs.presetGroups.append(groupNode);
@@ -447,7 +461,7 @@ export function createPanels(container, { store, actions }) {
     }
     refs.angleReadout.textContent = `${angle.toFixed(1)}°`;
 
-    for (const button of refs.presetGroups.querySelectorAll('[data-preset]')) {
+    for (const button of container.querySelectorAll('[data-preset]')) {
       button.setAttribute('aria-pressed', String(button.dataset.preset === state.output.presetId));
     }
     for (const button of refs.presetBackgrounds.querySelectorAll('[data-color]')) {

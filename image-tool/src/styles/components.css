@@ -159,6 +159,57 @@
   margin-top: 24px;
 }
 
+.empty-quick {
+  padding-top: 16px;
+  margin-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.empty-quick-title {
+  margin: 0 0 9px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 11px;
+  text-align: center;
+}
+
+.empty-quick-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.quick-preset {
+  display: flex;
+  min-height: 50px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--white);
+  text-align: left;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+.quick-preset:hover {
+  border-color: rgba(94, 234, 212, 0.55);
+  background: rgba(94, 234, 212, 0.12);
+}
+
+.quick-preset strong {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.quick-preset small {
+  color: rgba(255, 255, 255, 0.55);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+}
+
 .empty-card .button {
   border-color: rgba(255, 255, 255, 0.18);
   background: rgba(255, 255, 255, 0.08);
@@ -763,6 +814,25 @@ input[type="range"] {
 
 /* ---------- presets ---------- */
 
+.preset-quick {
+  display: grid;
+  gap: 8px;
+}
+
+.preset-grid--quick {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.preset-card--quick {
+  min-height: 84px;
+  border-color: #cfe6e0;
+  background: linear-gradient(180deg, #f2faf8, #ffffff);
+}
+
+.preset-card--quick .preset-name {
+  font-size: 14px;
+}
+
 .preset-groups {
   display: grid;
   gap: 16px;
@@ -1081,15 +1151,66 @@ input[type="range"] {
 
 @media (max-width: 760px) {
   .stage-empty {
-    padding: 16px;
+    padding: 14px;
   }
 
   .empty-card {
+    max-height: 100%;
     padding: 24px 18px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
 
   .empty-card h2 {
-    font-size: 19px;
+    font-size: 23px;
+  }
+
+  .empty-card p {
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  .empty-actions {
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .empty-card .button {
+    min-width: 0;
+    min-height: 48px;
+    flex: 1 1 0;
+    padding: 0 12px;
+    font-size: 15px;
+  }
+
+  .empty-quick {
+    padding-top: 14px;
+    margin-top: 16px;
+  }
+
+  .empty-quick-title {
+    font-size: 12px;
+  }
+
+  .quick-preset {
+    min-height: 52px;
+  }
+
+  .quick-preset strong {
+    font-size: 15px;
+  }
+
+  .quick-preset small {
+    font-size: 11px;
+  }
+
+  .empty-note {
+    margin-top: 14px;
+    font-size: 12px;
+  }
+
+  .empty-note--desktop {
+    display: none;
   }
 
   .empty-icon {
@@ -1113,16 +1234,110 @@ input[type="range"] {
     left: 10px;
   }
 
+  .stage-controls .icon-button {
+    width: 44px;
+    height: 44px;
+  }
+
+  .stage-controls .zoom-readout {
+    min-width: 46px;
+    font-size: 12px;
+  }
+
   .coverage-warning {
-    bottom: 58px;
+    bottom: 60px;
     max-width: calc(100% - 20px);
-    font-size: 10px;
+    font-size: 11px;
+  }
+
+  .button {
+    min-height: 46px;
+    font-size: 15px;
+  }
+
+  .button--small {
+    min-height: 44px;
+    font-size: 14px;
   }
 
   .input,
   .select,
   .angle-value {
-    min-height: 42px;
+    min-height: 48px;
+    font-size: 16px;
+  }
+
+  .input-unit {
+    font-size: 12px;
+  }
+
+  .section-heading {
+    font-size: 12.5px;
+  }
+
+  .section-heading small {
+    font-size: 11px;
+  }
+
+  .field-label {
+    font-size: 13px;
+  }
+
+  .field-label span {
+    font-size: 11px;
+  }
+
+  .hint,
+  .notice {
+    font-size: 12.5px;
+    line-height: 1.6;
+  }
+
+  .segment {
+    min-height: 44px;
+    font-size: 13px;
+  }
+
+  .chip {
+    min-height: 44px;
+    padding: 0 14px;
+    font-size: 13px;
+  }
+
+  .toggle-row {
+    min-height: 44px;
+    font-size: 14px;
+  }
+
+  .check input {
+    width: 20px;
+    height: 20px;
+  }
+
+  .summary-title {
+    font-size: 11.5px;
+  }
+
+  .summary-value {
+    font-size: 18px;
+  }
+
+  .summary-grid {
+    gap: 7px 12px;
+    font-size: 12px;
+  }
+
+  .estimate-line {
+    padding-top: 11px;
+    font-size: 12px;
+  }
+
+  .estimate-value {
+    font-size: 13px;
+  }
+
+  .export-cta .button {
+    min-height: 52px;
     font-size: 16px;
   }
 
@@ -1149,20 +1364,46 @@ input[type="range"] {
   }
 
   .toast-stack {
-    bottom: calc(var(--tabbar-h) + 12px + var(--safe-b));
+    top: calc(var(--header-h) + 10px + env(safe-area-inset-top, 0px));
+    bottom: auto;
+  }
+
+  .toast {
+    font-size: 13px;
   }
 
   .preset-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
+  .preset-grid--quick {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .preset-card {
-    min-height: 70px;
-    padding: 8px;
+    min-height: 84px;
+    padding: 10px;
+  }
+
+  .preset-card--quick {
+    min-height: 88px;
   }
 
   .preset-name {
-    font-size: 12px;
+    font-size: 13.5px;
+  }
+
+  .preset-card--quick .preset-name {
+    font-size: 15px;
+  }
+
+  .preset-size {
+    font-size: 11.5px;
+  }
+
+  .preset-tag {
+    padding: 2px 6px;
+    font-size: 9.5px;
   }
 
   .preset-mm {
@@ -1170,20 +1411,89 @@ input[type="range"] {
   }
 
   .panel-section {
-    gap: 12px;
-    padding-bottom: 16px;
+    gap: 14px;
+    padding-bottom: 18px;
   }
 
   .panel-section + .panel-section {
-    padding-top: 14px;
+    padding-top: 16px;
+  }
+
+  .swatch {
+    width: 40px;
+    height: 40px;
   }
 }
 
-@media (max-width: 360px) {
+@media (max-width: 520px) {
   .preset-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .preset-name {
+    font-size: 14.5px;
+  }
+
+  .preset-size {
+    font-size: 11.5px;
+  }
+}
+
+@media (min-width: 761px) and (pointer: coarse) {
+  .button {
+    min-height: 44px;
+    font-size: 14px;
+  }
+
+  .button--small {
+    min-height: 40px;
+    font-size: 13px;
+  }
+
+  .input,
+  .select,
+  .angle-value {
+    min-height: 44px;
+    font-size: 16px;
+  }
+
+  .chip,
+  .segment {
+    min-height: 38px;
+    font-size: 12px;
+  }
+
+  .swatch {
+    width: 36px;
+    height: 36px;
+  }
+
+  .icon-button,
+  .header-actions .button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .tool-button {
+    min-height: 60px;
+    font-size: 12px;
+  }
+
+  .section-heading {
+    font-size: 12px;
+  }
+
+  .field-label {
+    font-size: 12px;
+  }
+
+  .hint,
+  .notice {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 360px) {
   .stage-hud {
     display: none;
   }

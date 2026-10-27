@@ -1,10 +1,12 @@
 import {
+  LAYOUT_MOBILE_QUERY,
   MAX_EXPORT_EDGE_DESKTOP,
   MAX_EXPORT_EDGE_MOBILE,
   MAX_ZOOM,
   MIN_ZOOM,
   PANEL_TABS,
   QUALITY_DEFAULT,
+  QUICK_PRESET_IDS,
   ZOOM_STEP,
 } from '../core/constants.js';
 import { AppError, ErrorCode, messageOf } from '../core/errors.js';
@@ -38,7 +40,7 @@ import { formatBytes, formatMm } from '../utils/format.js';
 import { loadPreferences, savePreferences } from '../utils/storage.js';
 
 const prefs = loadPreferences();
-const isMobile = window.matchMedia('(max-width: 760px)').matches;
+const isMobile = window.matchMedia(LAYOUT_MOBILE_QUERY).matches;
 const maxEdge = isMobile ? MAX_EXPORT_EDGE_MOBILE : MAX_EXPORT_EDGE_DESKTOP;
 const FORMAT_IDS = new Set(['image/jpeg', 'image/png', 'image/webp']);
 const BACKGROUND_VALUES = new Set(['#ffffff', '#438edb', '#d23a32', '#d8d8d8', 'transparent']);
@@ -86,6 +88,16 @@ const store = createStore({
 });
 
 export function mountApp(root) {
+  const emptyQuickButtons = QUICK_PRESET_IDS.map((id) => {
+    const preset = getPreset(id);
+    if (!preset) return '';
+    return `
+      <button class="quick-preset" type="button" data-empty-preset="${preset.id}" aria-label="选择${preset.name}规格并挑照片">
+        <strong>${preset.name}</strong>
+        <small>${preset.width}×${preset.height} px</small>
+      </button>`;
+  }).join('');
+
   const toolButtons = PANEL_TABS.map(
     (tab) => `
       <button class="tool-button" type="button" data-tool="${tab.id}" aria-pressed="${
@@ -109,13 +121,13 @@ export function mountApp(root) {
   root.innerHTML = `
     <div class="app">
       <header class="app-header">
-        <div class="brand">
+        <a class="brand" href="../" title="返回 lite-joy 首页" aria-label="返回 lite-joy 首页">
           <div class="brand-mark">${icon('aperture', 21)}</div>
           <div class="brand-copy">
             <h1 class="brand-name">轻照 <small>LITE PHOTO</small></h1>
             <span class="brand-tag">本地证件照与图片处理</span>
           </div>
-        </div>
+        </a>
         <div class="header-spacer"></div>
         <div class="privacy-pill">图片不离开本机</div>
         <div class="header-actions">
@@ -135,8 +147,8 @@ export function mountApp(root) {
           <div class="stage-empty" id="empty-state">
             <div class="empty-card">
               <div class="empty-icon">${icon('image', 30)}</div>
-              <h2>把照片拖进来</h2>
-              <p>或从相册选择。支持 JPG、PNG、WebP，最大 40 MB。</p>
+              <h2>选择一张照片</h2>
+              <p>从相册选择或拍照。支持 JPG、PNG、WebP，最大 40 MB。</p>
               <div class="empty-actions">
                 <button class="button button--primary" type="button" data-action="open">
                   ${icon('upload', 16)} 选择照片
@@ -145,8 +157,12 @@ export function mountApp(root) {
                   ${icon('camera', 16)} 拍照
                 </button>
               </div>
+              <div class="empty-quick">
+                <p class="empty-quick-title">常用规格 · 选完再挑照片，导入即套用</p>
+                <div class="empty-quick-grid">${emptyQuickButtons}</div>
+              </div>
               <div class="empty-note">${icon('shield', 14)} 图片只在浏览器内处理，不会上传</div>
-              <div class="empty-note">${icon('info', 14)} 也可拖入或按 Ctrl/Cmd + V 粘贴图片</div>
+              <div class="empty-note empty-note--desktop">${icon('info', 14)} 电脑上也可拖入，或按 Ctrl/Cmd + V 粘贴</div>
             </div>
           </div>
 
@@ -179,6 +195,17 @@ export function mountApp(root) {
         </section>
 
         <aside class="panel" aria-label="工具面板">
+          <div
+            class="sheet-handle"
+            id="sheet-handle"
+            role="button"
+            tabindex="0"
+            aria-label="拖动或点击调整面板高度"
+            aria-controls="panel-body"
+            aria-expanded="false"
+          >
+            <span></span>
+          </div>
           <div class="panel-head">
             <div>
               <div class="panel-eyebrow" id="panel-eyebrow">CROP</div>
@@ -187,6 +214,15 @@ export function mountApp(root) {
             <span class="badge" id="panel-badge">本地</span>
           </div>
           <div class="panel-body" id="panel-body"></div>
+          <div class="panel-quick" id="panel-quick" hidden>
+            <button class="quick-meta" type="button" id="quick-meta" title="打开导出设置" aria-label="打开导出设置">
+              <strong id="quick-dims">—</strong>
+              <span id="quick-sub">—</span>
+            </button>
+            <button class="button button--primary" type="button" id="quick-export">
+              ${icon('download', 17)} 导出
+            </button>
+          </div>
           <div class="statusbar" aria-live="polite">
             <span id="status-size">未导入</span>
             <span class="status-sep"></span>
@@ -207,6 +243,14 @@ export function mountApp(root) {
   `;
 
   const refs = {
+    app: root.querySelector('.app'),
+    panel: root.querySelector('.panel'),
+    sheetHandle: root.querySelector('#sheet-handle'),
+    panelQuick: root.querySelector('#panel-quick'),
+    quickDims: root.querySelector('#quick-dims'),
+    quickSub: root.querySelector('#quick-sub'),
+    quickMeta: root.querySelector('#quick-meta'),
+    quickExport: root.querySelector('#quick-export'),
     stage: root.querySelector('#stage'),
     empty: root.querySelector('#empty-state'),
     stageHud: root.querySelector('#stage-hud'),
@@ -237,6 +281,9 @@ export function mountApp(root) {
   let lastEstimate = null;
   let lastEstimateSignature = '';
   let renderQueued = false;
+  let pendingPreset = null;
+
+  setupSheet();
 
   const cropOverlay = createCropOverlay(refs.stage, {
     store,
@@ -282,6 +329,112 @@ export function mountApp(root) {
   panels = createPanels(refs.panelBody, { store, actions });
   panels.setTool('crop');
 
+  function setupSheet() {
+    const panel = refs.panel;
+    const handle = refs.sheetHandle;
+    if (!panel || !handle) return;
+    const mobileQuery = window.matchMedia(LAYOUT_MOBILE_QUERY);
+
+    let ratio = 0.54;
+    let dragging = false;
+    let moved = false;
+    let startY = 0;
+    let startHeight = 0;
+
+    const mainHeight = () =>
+      root.querySelector('.app-main')?.clientHeight || window.innerHeight;
+    const bounds = () => {
+      const available = mainHeight();
+      const min = Math.min(280, available * 0.38);
+      const max = Math.max(min + 80, available - 132);
+      return { min, max, available };
+    };
+    const heightFor = (value) => {
+      const { min, max, available } = bounds();
+      return Math.round(clamp(value * available, min, max));
+    };
+    const compactRatio = () => {
+      const available = mainHeight();
+      if (available < 500) return 0.68;
+      if (available < 600) return 0.62;
+      return 0.54;
+    };
+    const applyRatio = (value) => {
+      ratio = value;
+      panel.style.height = `${heightFor(value)}px`;
+      panel.classList.toggle('is-tall', value > 0.64);
+      handle.setAttribute('aria-expanded', String(value > 0.64));
+    };
+
+    ratio = compactRatio();
+    if (mobileQuery.matches) applyRatio(ratio);
+
+    handle.addEventListener('pointerdown', (event) => {
+      if (!mobileQuery.matches) return;
+      if (event.button !== undefined && event.button !== 0) return;
+      dragging = true;
+      moved = false;
+      startY = event.clientY;
+      startHeight = panel.getBoundingClientRect().height;
+      refs.app.classList.add('is-sheet-dragging');
+      handle.setPointerCapture?.(event.pointerId);
+      event.preventDefault();
+    });
+
+    handle.addEventListener('pointermove', (event) => {
+      if (!dragging) return;
+      const delta = startY - event.clientY;
+      if (Math.abs(delta) > 4) moved = true;
+      const { min, max } = bounds();
+      panel.style.height = `${Math.round(clamp(startHeight + delta, min, max))}px`;
+    });
+
+    const settle = () => {
+      const expanded = panel.getBoundingClientRect().height > mainHeight() * 0.64;
+      dragging = false;
+      refs.app.classList.remove('is-sheet-dragging');
+      applyRatio(expanded ? 0.72 : compactRatio());
+    };
+
+    handle.addEventListener('pointerup', () => {
+      if (!dragging) return;
+      const current = panel.getBoundingClientRect().height;
+      if (!moved && Math.abs(current - startHeight) < 8) {
+        const expanded = current > mainHeight() * 0.64;
+        dragging = false;
+        refs.app.classList.remove('is-sheet-dragging');
+        applyRatio(expanded ? compactRatio() : 0.72);
+        return;
+      }
+      settle();
+    });
+    handle.addEventListener('pointercancel', settle);
+
+    handle.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        const expanded = panel.getBoundingClientRect().height > mainHeight() * 0.64;
+        applyRatio(expanded ? compactRatio() : 0.72);
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        applyRatio(0.72);
+      } else if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        applyRatio(compactRatio());
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (mobileQuery.matches) {
+        applyRatio(ratio);
+        return;
+      }
+      panel.style.height = '';
+      panel.classList.remove('is-tall');
+      handle.setAttribute('aria-expanded', 'false');
+    });
+  }
+
   // ---------- 基础 UI ----------
 
   function setTool(tool) {
@@ -314,16 +467,25 @@ export function mountApp(root) {
   // ---------- 文件 ----------
 
   function openFile() {
+    pendingPreset = null;
+    refs.fileInput.value = '';
+    refs.fileInput.click();
+  }
+
+  function openWithPreset(id) {
+    if (!getPreset(id)) return;
+    pendingPreset = id;
     refs.fileInput.value = '';
     refs.fileInput.click();
   }
 
   function openCamera() {
+    pendingPreset = null;
     refs.cameraInput.value = '';
     refs.cameraInput.click();
   }
 
-  async function loadFile(file) {
+  async function loadFile(file, requestedPreset = null) {
     if (!file) return;
     if (store.getState().ui.busy) {
       toast('正在导出，请稍候再更换图片', 'info');
@@ -363,6 +525,13 @@ export function mountApp(root) {
         ui: { ...store.getState().ui, tool: 'crop', cropMode: 'photo', busy: false },
       });
       setTool('crop');
+      if (requestedPreset) {
+        applyPreset(requestedPreset);
+        const applied = getPreset(requestedPreset);
+        if (applied) {
+          toast(`已套用${applied.name}，底部可直接导出`, 'success', 2800);
+        }
+      }
       if (source.downsampled) {
         toast(
           `原图较大，已优化到 ${source.width}×${source.height} 以便流畅编辑`,
@@ -1030,6 +1199,26 @@ export function mountApp(root) {
     refs.stageHud.hidden = !hasSource;
     refs.exportButton.disabled = !hasSource || state.ui.busy;
 
+    const quickFormat =
+      state.encode.format === 'image/png'
+        ? 'PNG'
+        : state.encode.format === 'image/webp'
+          ? 'WebP'
+          : 'JPEG';
+    refs.panelQuick.hidden = !hasSource || state.ui.tool === 'export';
+    if (hasSource) {
+      const quickPreset = getPreset(state.output.presetId);
+      refs.quickDims.textContent = d ? `${d.outputWidth} × ${d.outputHeight}` : '—';
+      refs.quickSub.textContent = `${
+        quickPreset?.name ?? (state.output.mode === 'auto' ? '按裁剪框' : '自定义尺寸')
+      } · ${quickFormat}`;
+      refs.quickMeta.setAttribute('aria-label', `导出设置：${refs.quickSub.textContent}`);
+      refs.quickExport.disabled = state.ui.busy;
+      refs.quickExport.innerHTML = `${icon('download', 17)} ${
+        state.ui.busy ? '导出中…' : '导出'
+      }`;
+    }
+
     if (hasSource) {
       refs.fileBadge.textContent = state.source.name;
       refs.fileBadge.title = state.source.name;
@@ -1083,6 +1272,19 @@ export function mountApp(root) {
   for (const button of root.querySelectorAll('[data-action="camera"]')) {
     button.addEventListener('click', openCamera);
   }
+  for (const button of root.querySelectorAll('[data-empty-preset]')) {
+    button.addEventListener('click', () => openWithPreset(button.dataset.emptyPreset));
+  }
+  refs.quickExport.addEventListener('click', () => exportImage());
+  refs.quickMeta.addEventListener('click', () => setTool('export'));
+  refs.panelBody.addEventListener('focusin', (event) => {
+    if (!isMobile) return;
+    const target = event.target;
+    if (!(target instanceof HTMLElement) || !target.matches('input, select, textarea')) return;
+    window.setTimeout(() => {
+      target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }, 260);
+  });
   refs.exportButton.addEventListener('click', () => {
     if (!store.getState().source) {
       openFile();
@@ -1098,7 +1300,11 @@ export function mountApp(root) {
     });
   }
 
-  refs.fileInput.addEventListener('change', () => loadFile(refs.fileInput.files?.[0]));
+  refs.fileInput.addEventListener('change', () => {
+    const preset = pendingPreset;
+    pendingPreset = null;
+    loadFile(refs.fileInput.files?.[0], preset);
+  });
   refs.cameraInput.addEventListener('change', () => loadFile(refs.cameraInput.files?.[0]));
 
   document.addEventListener('paste', (event) => {
