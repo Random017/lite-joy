@@ -1,0 +1,474 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.app-header {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  flex: 0 0 var(--header-h);
+  align-items: center;
+  gap: 18px;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(243, 242, 237, 0.92);
+  backdrop-filter: blur(12px);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+}
+
+.brand-mark {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  place-items: center;
+  border-radius: 11px;
+  background: var(--ink);
+  color: var(--accent-bright);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.brand-mark svg {
+  width: 21px;
+  height: 21px;
+}
+
+.brand-copy {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+
+.brand-name {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.brand-name small {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.brand-tag {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.header-spacer {
+  flex: 1;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.privacy-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.6);
+  color: var(--ink-2);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.privacy-pill::before {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  content: "";
+}
+
+.app-main {
+  display: grid;
+  flex: 1 1 auto;
+  min-height: 0;
+  grid-template-columns: var(--rail-w) minmax(0, 1fr) var(--panel-w);
+}
+
+.tool-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 14px 10px;
+  border-right: 1px solid var(--line);
+  background: var(--bg-soft);
+}
+
+.tool-button {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
+  min-height: 62px;
+  padding: 8px 4px;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--ink-2);
+  font-size: 11px;
+  transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+
+.tool-button svg {
+  width: 21px;
+  height: 21px;
+}
+
+.tool-button:hover {
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--ink);
+}
+
+.tool-button[aria-pressed="true"] {
+  border-color: #cfe6e0;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+.tool-button[aria-pressed="true"]::before {
+  position: absolute;
+  top: 12px;
+  left: -10px;
+  width: 3px;
+  height: 22px;
+  border-radius: 0 4px 4px 0;
+  background: var(--accent);
+  content: "";
+}
+
+.stage {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background-color: var(--bg-stage);
+  background-image:
+    linear-gradient(45deg, rgba(255, 255, 255, 0.025) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(255, 255, 255, 0.025) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.025) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.025) 75%);
+  background-position: 0 0, 0 12px, 12px -12px, -12px 0;
+  background-size: 24px 24px;
+  isolation: isolate;
+  touch-action: none;
+}
+
+.stage-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+.stage.is-dragover::after {
+  position: absolute;
+  z-index: 60;
+  inset: 16px;
+  display: grid;
+  place-items: center;
+  border: 2px dashed var(--accent-bright);
+  border-radius: var(--radius-lg);
+  background: rgba(15, 118, 110, 0.18);
+  color: var(--white);
+  font-size: 15px;
+  font-weight: 600;
+  content: "松开以载入照片";
+  pointer-events: none;
+}
+
+.panel {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex-direction: column;
+  border-left: 1px solid var(--line);
+  background: var(--bg-panel);
+}
+
+.panel-head {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 20px 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.panel-eyebrow {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.panel-title {
+  margin: 3px 0 0;
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.panel-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 18px 20px 28px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.statusbar {
+  display: flex;
+  flex: 0 0 42px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 20px;
+  border-top: 1px solid var(--line);
+  background: var(--bg-soft);
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.statusbar .status-sep {
+  width: 1px;
+  height: 12px;
+  background: var(--line-strong);
+}
+
+.statusbar .status-warn {
+  color: var(--warning);
+}
+
+.mobile-tabs {
+  display: none;
+}
+
+@media (max-width: 1180px) {
+  :root {
+    --panel-w: 316px;
+    --rail-w: 70px;
+  }
+
+  .brand-tag {
+    display: none;
+  }
+
+  .panel-head {
+    padding: 18px 16px 12px;
+  }
+
+  .panel-body {
+    padding: 16px 16px 24px;
+  }
+}
+
+@media (max-width: 900px) {
+  :root {
+    --panel-w: 292px;
+    --rail-w: 64px;
+  }
+
+  .privacy-pill {
+    display: none;
+  }
+
+  .tool-button {
+    min-height: 56px;
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 760px) {
+  :root {
+    --header-h: 56px;
+    --tabbar-h: 58px;
+  }
+
+  .app {
+    min-height: 0;
+  }
+
+  .app-header {
+    gap: 10px;
+    padding: 0 12px;
+  }
+
+  .brand-mark {
+    width: 32px;
+    height: 32px;
+    flex-basis: 32px;
+    border-radius: 9px;
+  }
+
+  .brand-name {
+    font-size: 15px;
+  }
+
+  .brand-name small,
+  .brand-tag,
+  .privacy-pill {
+    display: none;
+  }
+
+  .header-actions {
+    gap: 6px;
+  }
+
+  .header-actions .button-label {
+    display: none;
+  }
+
+  .header-actions .button {
+    min-width: 40px;
+    padding: 0 10px;
+  }
+
+  .app-main {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+
+  .tool-rail {
+    display: none;
+  }
+
+  .panel {
+    max-height: 42vh;
+    max-height: 42dvh;
+    border-top: 1px solid var(--line);
+    border-left: 0;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.08);
+  }
+
+  .panel-head {
+    padding: 12px 14px 9px;
+  }
+
+  .panel-title {
+    font-size: 17px;
+  }
+
+  .panel-body {
+    padding: 12px 14px calc(16px + var(--safe-b)) ;
+  }
+
+  .statusbar {
+    display: none;
+  }
+
+  .mobile-tabs {
+    display: grid;
+    flex: 0 0 calc(var(--tabbar-h) + var(--safe-b));
+    grid-template-columns: repeat(4, 1fr);
+    padding-bottom: var(--safe-b);
+    border-top: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(14px);
+  }
+
+  .mobile-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    font-size: 10px;
+  }
+
+  .mobile-tab svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .mobile-tab[aria-pressed="true"] {
+    color: var(--accent-strong);
+  }
+
+  .mobile-tab[aria-pressed="true"]::before {
+    position: absolute;
+    top: 0;
+    width: 24px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--accent);
+    content: "";
+  }
+
+  .mobile-tab {
+    position: relative;
+  }
+
+  .app.is-empty .panel,
+  .app.is-empty .mobile-tabs {
+    display: none;
+  }
+}
+
+.app.is-empty .stage-controls {
+  display: none;
+}
+
+.app:not(.is-empty) .stage {
+  cursor: grab;
+}
+
+.stage.is-grabbing {
+  cursor: grabbing;
+}
+
+@media (max-width: 380px) {
+  .app-header {
+    padding: 0 9px;
+  }
+
+  .brand-name small {
+    display: none;
+  }
+
+  .panel-body {
+    padding-right: 11px;
+    padding-left: 11px;
+  }
+}

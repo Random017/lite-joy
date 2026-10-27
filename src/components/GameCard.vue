@@ -3,6 +3,7 @@ defineProps<{
   title: string
   description: string
   emoji: string
+  actionLabel?: string
 }>()
 
 defineEmits<{
@@ -15,7 +16,7 @@ defineEmits<{
     <div class="card-emoji">{{ emoji }}</div>
     <h3>{{ title }}</h3>
     <p>{{ description }}</p>
-    <button class="play-btn">开始游戏</button>
+    <button class="play-btn">{{ actionLabel || '开始游戏' }}</button>
   </div>
 </template>
 
