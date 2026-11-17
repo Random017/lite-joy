@@ -3,9 +3,10 @@ import { ref } from 'vue'
 import GameCard from './components/GameCard.vue'
 import BalloonGame from './components/BalloonGame.vue'
 import BrickGame from './components/BrickGame.vue'
+import AmmoGame from './components/AmmoGame.vue'
 import DevSidebar from './components/DevSidebar.vue'
 
-type View = 'home' | 'balloon-game' | 'brick-game'
+type View = 'home' | 'balloon-game' | 'brick-game' | 'ammo-game'
 const currentView = ref<View>('home')
 
 function openImageTool() {
@@ -33,6 +34,12 @@ function openImageTool() {
           emoji="🧱"
           @play="currentView = 'brick-game'"
         />
+        <GameCard
+          title="让子弹射"
+          description="传送带造子弹，守住沙袋墙打满十波。"
+          emoji="🎯"
+          @play="currentView = 'ammo-game'"
+        />
       </div>
     </section>
 
@@ -55,6 +62,10 @@ function openImageTool() {
   />
   <BrickGame
     v-else-if="currentView === 'brick-game'"
+    @back="currentView = 'home'"
+  />
+  <AmmoGame
+    v-else-if="currentView === 'ammo-game'"
     @back="currentView = 'home'"
   />
 </template>

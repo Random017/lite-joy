@@ -1,6 +1,8 @@
 # lite-joy
 
-Vue 3 + TypeScript + Vite 的小站：两个小游戏、一个开发者工具侧栏，以及「轻照」本地图片 / 证件照工具。
+Vue 3 + TypeScript + Vite 的小站：三个小游戏（气球爆炸、打砖块、让子弹射）、一个开发者工具侧栏，以及「轻照」本地图片 / 证件照工具。
+
+「让子弹射」是照着抖音试玩广告复刻的弹药经济小游戏：传送带造子弹 → 倍率门翻倍 → 炮塔自动开火，长按战场倾泻火力，用金币升级。玩法拆解、场景标注与可玩原型见 [docs/bullet-factory/README.md](docs/bullet-factory/README.md)。
 
 ## 开发
 
@@ -47,7 +49,10 @@ npm run test:e2e
 ```text
 ├─ src/                     # 主站（Vue SFC）
 │  ├─ App.vue               # 首页 + 游戏视图
-│  └─ components/           # 游戏、卡片、开发者工具侧栏
+│  ├─ components/           # 游戏、卡片、开发者工具侧栏
+│  └─ games/ammo/           # 「让子弹射」引擎（纯 Canvas 2D，与框架无关）
+├─ docs/bullet-factory/     # 该游戏的玩法拆解、原型与验证脚本
+├─ public/                  # favicon、游戏开始页横幅
 ├─ image-tool/              # 轻照（原生 JS + Canvas，独立页面入口）
 │  ├─ index.html
 │  ├─ src/
