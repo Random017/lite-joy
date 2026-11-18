@@ -1,8 +1,10 @@
 # lite-joy
 
-Vue 3 + TypeScript + Vite 的小站：三个小游戏（气球爆炸、打砖块、让子弹射）、一个开发者工具侧栏，以及「轻照」本地图片 / 证件照工具。
+Vue 3 + TypeScript + Vite 的小站：四个小游戏（气球爆炸、打砖块、让子弹射、无尽火线）、一个开发者工具侧栏，以及「轻照」本地图片 / 证件照工具。
 
 「让子弹射」是照着抖音试玩广告复刻的弹药经济小游戏：传送带造子弹 → 倍率门翻倍 → 炮塔自动开火，长按战场倾泻火力，用金币升级。玩法拆解、场景标注与可玩原型见 [docs/bullet-factory/README.md](docs/bullet-factory/README.md)。
+
+「无尽火线」同样来自一支试玩广告：竖屏左右滑动带队，穿过数字门（×2 / +N / −N）改变兵力，撞上丧尸掉兵，最后打 Boss。兵不是输出，是血条和时间——这是整套数值的地基。玩法拆解与关卡数据见 [docs/horde/README.md](docs/horde/README.md)。
 
 ## 开发
 
@@ -33,6 +35,9 @@ npm test
 
 # 浏览器端冒烟 / 功能验证（需要本机 Edge，先启动 dev 或 preview）
 npm run test:e2e
+
+# 「无尽火线」整局验证：机器人贪心走位打一关，默认第 1 关
+npm run test:e2e:horde
 ```
 
 E2E 默认访问 `http://127.0.0.1:5173/lite-joy/image-tool/`，可用 `BASE_URL` 覆盖，例如：
@@ -42,6 +47,8 @@ $env:BASE_URL='http://127.0.0.1:4184/lite-joy/image-tool/'
 npm run test:e2e
 ```
 
+「无尽火线」的脚本读 `BASE_URL` 时要指到主站（`…/lite-joy/`），跑完关卡的截图落在 `test-artifacts/horde/`。
+
 验证截图与导出文件写入 `test-artifacts/`（已忽略）。
 
 ## 目录
@@ -50,8 +57,10 @@ npm run test:e2e
 ├─ src/                     # 主站（Vue SFC）
 │  ├─ App.vue               # 首页 + 游戏视图
 │  ├─ components/           # 游戏、卡片、开发者工具侧栏
-│  └─ games/ammo/           # 「让子弹射」引擎（纯 Canvas 2D，与框架无关）
+│  ├─ games/ammo/           # 「让子弹射」引擎（纯 Canvas 2D，与框架无关）
+│  └─ games/horde/          # 「无尽火线」引擎 + 关卡数据
 ├─ docs/bullet-factory/     # 该游戏的玩法拆解、原型与验证脚本
+├─ docs/horde/              # 该游戏的玩法拆解、关卡数值与端到端脚本
 ├─ public/                  # favicon、游戏开始页横幅
 ├─ image-tool/              # 轻照（原生 JS + Canvas，独立页面入口）
 │  ├─ index.html

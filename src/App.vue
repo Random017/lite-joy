@@ -4,9 +4,10 @@ import GameCard from './components/GameCard.vue'
 import BalloonGame from './components/BalloonGame.vue'
 import BrickGame from './components/BrickGame.vue'
 import AmmoGame from './components/AmmoGame.vue'
+import HordeGame from './components/HordeGame.vue'
 import DevSidebar from './components/DevSidebar.vue'
 
-type View = 'home' | 'balloon-game' | 'brick-game' | 'ammo-game'
+type View = 'home' | 'balloon-game' | 'brick-game' | 'ammo-game' | 'horde-game'
 const currentView = ref<View>('home')
 
 function openImageTool() {
@@ -40,6 +41,12 @@ function openImageTool() {
           emoji="🎯"
           @play="currentView = 'ammo-game'"
         />
+        <GameCard
+          title="无尽火线"
+          description="左右滑着带队往前冲，穿数字门翻倍兵力，别让丧尸把队伍吃光。"
+          emoji="🎖"
+          @play="currentView = 'horde-game'"
+        />
       </div>
     </section>
 
@@ -66,6 +73,10 @@ function openImageTool() {
   />
   <AmmoGame
     v-else-if="currentView === 'ammo-game'"
+    @back="currentView = 'home'"
+  />
+  <HordeGame
+    v-else-if="currentView === 'horde-game'"
     @back="currentView = 'home'"
   />
 </template>
